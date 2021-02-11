@@ -1,6 +1,8 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 
+from phonenumber_field.modelfields import PhoneNumberField
+
 
 class Restaurant(models.Model):
     name = models.CharField('название', max_length=50)
@@ -35,7 +37,8 @@ class Product(models.Model):
     name = models.CharField('название', max_length=50)
     category = models.ForeignKey(ProductCategory, null=True, blank=True, on_delete=models.SET_NULL,
                                  verbose_name='категория', related_name='products')
-    price = models.DecimalField('цена', max_digits=8, decimal_places=2, validators=[MinValueValidator(0)])
+    price = models.DecimalField('цена', max_digits=8, decimal_places=2,
+                                validators=[MinValueValidator(0)])
     image = models.ImageField('картинка')
     special_status = models.BooleanField('спец.предложение', default=False, db_index=True)
     description = models.TextField('описание', max_length=200, blank=True)
@@ -65,4 +68,36 @@ class RestaurantMenuItem(models.Model):
         verbose_name_plural = 'пункты меню ресторана'
         unique_together = [
             ['restaurant', 'product']
+        ]
+
+
+class Order(models.Model):
+    first_name = models.CharField('имя', max_length=50)
+    last_name = models.CharField('фамилия', max_length=50)
+    address = models.CharField('адрес', max_length=250)
+    phone = PhoneNumberField()
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}, {self.address}'
+
+    class Meta:
+        verbose_name = 'заказ'
+        verbose_name_plural = 'заказы'
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE,
+                              related_name='order_items', verbose_name='заказ')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,
+                                related_name='order_items', verbose_name='продукт')
+    quantity = models.PositiveSmallIntegerField()
+
+    def __str__(self):
+        return f"{self.product.name}, {self.order}"
+
+    class Meta:
+        verbose_name = 'элемент заказа'
+        verbose_name_plural = 'элементы заказа'
+        unique_together = [
+            ['order', 'product']
         ]

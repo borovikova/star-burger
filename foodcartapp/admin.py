@@ -7,11 +7,17 @@ from .models import Product
 from .models import ProductCategory
 from .models import Restaurant
 from .models import RestaurantMenuItem
+from .models import Order
+from .models import OrderItem
 
 
 class RestaurantMenuItemInline(admin.TabularInline):
     model = RestaurantMenuItem
     extra = 0
+
+
+class OrderItemInline(admin.TabularInline):
+    model = OrderItem
 
 
 @admin.register(Restaurant)
@@ -104,3 +110,26 @@ class ProductAdmin(admin.ModelAdmin):
 @admin.register(ProductCategory)
 class ProductAdmin(admin.ModelAdmin):
     pass
+
+
+def order_name(obj):
+    return f'{obj.first_name} {obj.last_name}, {obj.address}'
+
+
+order_name.short_description = 'Заказ'
+
+
+@admin.register(Order)
+class OrderAdmin(admin.ModelAdmin):
+    search_fields = [
+        'first_name',
+        'last_name',
+        'address',
+        'contact_phone',
+    ]
+    list_display = [
+        order_name
+    ]
+    inlines = [
+        OrderItemInline
+    ]
