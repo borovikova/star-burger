@@ -2,7 +2,9 @@ import json
 
 from django.http import JsonResponse
 from django.templatetags.static import static
+from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 from .models import Order, OrderItem, Product
 
@@ -62,6 +64,12 @@ def product_list_api(request):
 @api_view(['POST'])
 def register_order(request):
     raw_order = request.data
+    if 'products' not in raw_order.keys() \
+            or not isinstance(raw_order['products'], list) \
+            or not raw_order['products']:
+        return Response({'Error': 'Products keys not found in request or not list'},
+                        status=status.HTTP_417_EXPECTATION_FAILED)
+
     order = Order.objects.create(
         first_name=raw_order['firstname'],
         last_name=raw_order['lastname'],
