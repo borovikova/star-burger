@@ -5,6 +5,8 @@ from django.templatetags.static import static
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.serializers import (CharField, ModelSerializer,
+                                        ValidationError)
 
 from .models import Order, OrderItem, Product
 
@@ -61,26 +63,38 @@ def product_list_api(request):
     })
 
 
+class OderItemSerializer(ModelSerializer):
+
+    class Meta:
+        model = OrderItem
+        fields = ['product', 'quantity']
+
+
+class OrderSerializer(ModelSerializer):
+    products = OderItemSerializer(many=True, allow_empty=False)
+
+    class Meta:
+        model = Order
+        fields = ['firstname', 'lastname',
+                  'address', 'phonenumber', 'products']
+
+
 @api_view(['POST'])
 def register_order(request):
-    raw_order = request.data
-    if 'products' not in raw_order.keys() \
-            or not isinstance(raw_order['products'], list) \
-            or not raw_order['products']:
-        return Response({'Error': 'Products keys not found in request or not list'},
-                        status=status.HTTP_417_EXPECTATION_FAILED)
+    serializer = OrderSerializer(data=request.data)
+    serializer.is_valid(raise_exception=True)
 
     order = Order.objects.create(
-        first_name=raw_order['firstname'],
-        last_name=raw_order['lastname'],
-        phone=raw_order['phonenumber'],
-        address=raw_order['address'],
+        firstname=serializer.validated_data['firstname'],
+        lastname=serializer.validated_data['lastname'],
+        phonenumber=serializer.validated_data['phonenumber'],
+        address=serializer.validated_data['address'],
     )
     items = OrderItem.objects.bulk_create(
         [OrderItem(
-            product_id=product['product'],
+            product=product['product'],
             quantity=product['quantity'],
             order_id=order.id)
-            for product in raw_order['products']]
+            for product in serializer.validated_data['products']]
     )
     return JsonResponse({})
