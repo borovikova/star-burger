@@ -71,7 +71,8 @@ class OderItemSerializer(ModelSerializer):
 
 
 class OrderSerializer(ModelSerializer):
-    products = OderItemSerializer(many=True, allow_empty=False)
+    products = OderItemSerializer(
+        many=True, allow_empty=False, write_only=True)
 
     class Meta:
         model = Order
@@ -97,4 +98,6 @@ def register_order(request):
             order_id=order.id)
             for product in serializer.validated_data['products']]
     )
-    return JsonResponse({})
+
+    serializer = OrderSerializer(order)
+    return Response(serializer.data)
