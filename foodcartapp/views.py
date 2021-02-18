@@ -91,10 +91,12 @@ def register_order(request):
         phonenumber=serializer.validated_data['phonenumber'],
         address=serializer.validated_data['address'],
     )
+
     items = OrderItem.objects.bulk_create(
         [OrderItem(
             product=product['product'],
             quantity=product['quantity'],
+            price=product['product'].price * product['quantity'],
             order_id=order.id)
             for product in serializer.validated_data['products']]
     )

@@ -93,6 +93,8 @@ class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE,
                                 related_name='order_items', verbose_name='продукт')
     quantity = models.PositiveSmallIntegerField()
+    price = models.DecimalField('стоимость позиции', null=True, max_digits=8, decimal_places=2,
+                                validators=[MinValueValidator(0)])
 
     def __str__(self):
         return f"{self.product.name}, {self.order}"
