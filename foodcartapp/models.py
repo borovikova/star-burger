@@ -84,8 +84,9 @@ class Order(models.Model):
     lastname = models.CharField('фамилия', max_length=50)
     address = models.CharField('адрес', max_length=250)
     phonenumber = PhoneNumberField()
-    order_status = models.CharField(
-        max_length=15, choices=ORDER_STATUS, default='new')
+    order_status = models.CharField('статус заказа',
+                                    max_length=15, choices=ORDER_STATUS, default='new')
+    comment = models.TextField('комментарий', max_length=500, blank=True)
 
     def __str__(self):
         return f'{self.firstname} {self.lastname}, {self.address}'
