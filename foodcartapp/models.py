@@ -74,10 +74,18 @@ class RestaurantMenuItem(models.Model):
 
 
 class Order(models.Model):
+    ORDER_STATUS = (
+        ('new', 'Новый'),
+        ('preparation', 'Готовится'),
+        ('in_delivery', 'У курьера'),
+        ('finished', 'Доставлен'),
+    )
     firstname = models.CharField('имя', max_length=50)
     lastname = models.CharField('фамилия', max_length=50)
     address = models.CharField('адрес', max_length=250)
     phonenumber = PhoneNumberField()
+    order_status = models.CharField(
+        max_length=15, choices=ORDER_STATUS, default='new')
 
     def __str__(self):
         return f'{self.firstname} {self.lastname}, {self.address}'
