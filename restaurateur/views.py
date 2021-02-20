@@ -98,5 +98,6 @@ def view_restaurants(request):
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     return render(request, template_name='order_items.html', context={
-        'order_items': Order.objects.annotate(total_price=Sum('order_items__price'))
+        'order_items': Order.objects.annotate(total_price=Sum('order_items__price')),
+        'opts': Order._meta
     })
