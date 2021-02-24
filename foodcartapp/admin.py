@@ -120,7 +120,7 @@ order_name.short_description = 'Заказ'
 class OrderAdmin(admin.ModelAdmin):
     def response_post_save_change(self, request, obj):
         res = super().response_post_save_change(request, obj)
-        if url_has_allowed_host_and_scheme(request.GET['next'], None):
+        if url_has_allowed_host_and_scheme(request.GET.get('next', ''), None):
             return redirect(request.GET['next'])
         else:
             return res
