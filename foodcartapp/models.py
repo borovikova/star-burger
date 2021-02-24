@@ -81,7 +81,7 @@ class Order(models.Model):
         ('in_delivery', 'У курьера'),
         ('finished', 'Доставлен'),
     )
-    PAYMENT_CHOICE = (
+    PAYMENT_METHOD = (
         ('cash', 'Наличные'),
         ('card', 'Картой на сайте'),
     )
@@ -96,7 +96,7 @@ class Order(models.Model):
     called = models.DateTimeField('время звонка', null=True, blank=True)
     delivered = models.DateTimeField('время доставки', null=True, blank=True)
     payment = models.CharField(
-        'способ оплаты', max_length=15, choices=PAYMENT_CHOICE)
+        'способ оплаты', max_length=15, choices=PAYMENT_METHOD)
 
     def __str__(self):
         return f'{self.firstname} {self.lastname}, {self.address}'
