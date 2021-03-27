@@ -23,7 +23,7 @@
       <th>Телефон</th>
       <th>Адрес доставки</th>
       <th>Комментарий</th>
-      <th>Рестораны</th>
+      <th width=20%>Рестораны</th>
       <th>Ссылка на админку</th>
     </tr>
 
@@ -42,7 +42,7 @@
                 <summary>Развернуть</summary>
                 <ul>
                 {% for restaurant in item.restaurants %}
-                  <li>{{ restaurant }}<br></li>
+                  <li>{{ restaurant }} - {{ restaurant.distance }} км<br></li>
                 {% endfor %}
                 </ul>
             </details>

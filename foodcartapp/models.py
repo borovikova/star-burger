@@ -1,10 +1,14 @@
 import itertools
 
+from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
 from django.db.models import Prefetch
 from django.utils import timezone
+from geopy import distance
 from phonenumber_field.modelfields import PhoneNumberField
+
+import utils
 
 
 class Restaurant(models.Model):
@@ -82,9 +86,10 @@ class OrderQuerySet(models.QuerySet):
         self = self.prefetch_related(
             Prefetch('order_items', queryset=OrderItem.objects.select_related('product')))
         menu_items = RestaurantMenuItem.objects.exclude(availability=False).select_related(
-            'restaurant', 'product')
+            'restaurant', 'product').order_by('restaurant_id')
 
         for order in self:
+            order_coords = utils.fetch_coordinates(settings.YANDEX_API_KEY, order.address)
             order.products = [
                 item.product.id for item in order.order_items.all()]
             order.restaurants = []
@@ -92,8 +97,10 @@ class OrderQuerySet(models.QuerySet):
                 products_in_restaurant = [
                     menu_item.product.id for menu_item in group]
                 if all(product in products_in_restaurant for product in order.products):
+                    restaurant_coords = utils.fetch_coordinates(settings.YANDEX_API_KEY, restaurant.address)
+                    restaurant.distance = round(distance.distance(order_coords, restaurant_coords).km, 2)
                     order.restaurants.append(restaurant)
-
+            order.restaurants.sort(key=lambda r: r.distance)
         return self
 
 
