@@ -81,6 +81,13 @@ class RestaurantMenuItem(models.Model):
         ]
 
 
+class Place(models.Model):
+    address = models.CharField('адрес', max_length=150)
+    latitude = models.FloatField('широта')
+    longitude = models.FloatField('долгота')
+    updated = models.DateTimeField('дата обновления', auto_now=True)
+
+
 class OrderQuerySet(models.QuerySet):
     def fetch_restaurants(self):
         self = self.prefetch_related(
@@ -89,18 +96,22 @@ class OrderQuerySet(models.QuerySet):
             'restaurant', 'product').order_by('restaurant_id')
 
         for order in self:
-            order_coords = utils.fetch_coordinates(settings.YANDEX_API_KEY, order.address)
+            order_coords = utils.get_coordinates_from_db_or_api(settings.YANDEX_API_KEY, order.address)
             order.products = [
                 item.product.id for item in order.order_items.all()]
             order.restaurants = []
             for restaurant, group in itertools.groupby(menu_items, lambda menu_item: menu_item.restaurant):
-                products_in_restaurant = [
-                    menu_item.product.id for menu_item in group]
+
+                products_in_restaurant = [menu_item.product.id for menu_item in group]
                 if all(product in products_in_restaurant for product in order.products):
-                    restaurant_coords = utils.fetch_coordinates(settings.YANDEX_API_KEY, restaurant.address)
-                    restaurant.distance = round(distance.distance(order_coords, restaurant_coords).km, 2)
+
+                    restaurant_coords = utils.get_coordinates_from_db_or_api(
+                        settings.YANDEX_API_KEY, restaurant.address)
+                    if order_coords and restaurant_coords:
+                        restaurant.distance = round(distance.distance(order_coords, restaurant_coords).km, 2)
+
                     order.restaurants.append(restaurant)
-            order.restaurants.sort(key=lambda r: r.distance)
+            order.restaurants.sort(key=lambda r: getattr(r, 'distance', 0))
         return self
 
 
