@@ -9,11 +9,11 @@
     <h2>Необработанные заказы</h2>
   </center>
 
-  <hr/>
-  <br/>
-  <br/>
-  <div class="container">
-   <table class="table table-responsive">
+<hr/>
+<br/>
+<br/>
+<div class="container">
+  <table class="table table-responsive">
     <tr>
       <th>ID заказа</th>
       <th>Статус заказа</th>
@@ -28,32 +28,33 @@
     </tr>
 
     {% for item in order_items %}
-      <tr>
-        <td>{{ item.id }}</td>
-        <td>{{ item.get_order_status_display }}</td>
-        <td>{{ item.get_payment_display }}</td>
-        <td>{{ item.total_price}}</td>
-        <td>{{ item.firstname }} {{ item.lastname }}</td>
-        <td>{{ item.phonenumber }}</td>
-        <td>{{ item.address }}</td>
-        <td>{{ item.comment }}</td>
-        <td>
-            <details>
-                <summary>Развернуть</summary>
-                <ul>
-                {% for restaurant in item.restaurants %}
-                  {% if restaurant.distance %}
-                    <li>{{ restaurant }} - {{ restaurant.distance }} км<br></li>
-                  {% else %}
-                    <li>{{ restaurant }}<br></li>
-                  {% endif %}
-                {% endfor %}
-                </ul>
-            </details>
-        </td>
-        <td><a href="{% url opts|admin_urlname:'change' item.pk %}?next={{ request.get_full_path|urlencode }}">Редактировать</a></td>
-      </tr>
+    <tr>
+      <td>{{ item.id }}</td>
+      <td>{{ item.get_order_status_display }}</td>
+      <td>{{ item.get_payment_display }}</td>
+      <td>{{ item.total_price}}</td>
+      <td>{{ item.firstname }} {{ item.lastname }}</td>
+      <td>{{ item.phonenumber }}</td>
+      <td>{{ item.address }}</td>
+      <td>{{ item.comment }}</td>
+      <td>
+        <details>
+          <summary>Развернуть</summary>
+          <ul>
+            {% for restaurant in item.restaurants %}
+            {% if restaurant.1 %}
+            <li>{{ restaurant.0 }} - {{ restaurant.1 }} км<br></li>
+            {% else %}
+            <li>{{ restaurant.0 }}<br></li>
+            {% endif %}
+            {% endfor %}
+          </ul>
+        </details>
+      </td>
+      <td><a href="{% url opts|admin_urlname:'change' item.pk %}?next={{ request.get_full_path|urlencode }}">Редактировать</a>
+      </td>
+    </tr>
     {% endfor %}
-   </table>
-  </div>
+  </table>
+</div>
 {% endblock %}

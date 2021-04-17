@@ -100,18 +100,21 @@ class OrderQuerySet(models.QuerySet):
             order.products = [
                 item.product.id for item in order.order_items.all()]
             order.restaurants = []
+
             for restaurant, group in itertools.groupby(menu_items, lambda menu_item: menu_item.restaurant):
-
                 products_in_restaurant = [menu_item.product.id for menu_item in group]
-                if all(product in products_in_restaurant for product in order.products):
 
+                if all(product in products_in_restaurant for product in order.products):
                     restaurant_coords = utils.get_coordinates_from_db_or_api(
                         settings.YANDEX_API_KEY, restaurant.address)
+                    dist = None
                     if order_coords and restaurant_coords:
-                        restaurant.distance = round(distance.distance(order_coords, restaurant_coords).km, 2)
+                        dist = round(
+                            distance.distance(order_coords, restaurant_coords).km, 2)
+                    order.restaurants.append((restaurant.address, dist))
 
-                    order.restaurants.append(restaurant)
             order.restaurants.sort(key=lambda r: getattr(r, 'distance', 0))
+
         return self
 
 
