@@ -113,7 +113,7 @@ class OrderQuerySet(models.QuerySet):
                             distance.distance(order_coords, restaurant_coords).km, 2)
                     order.restaurants.append((restaurant.address, dist))
 
-            order.restaurants.sort(key=lambda r: getattr(r, 'distance', 0))
+            order.restaurants.sort(key=lambda r: r[1])
 
         return self
 
