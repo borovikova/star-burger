@@ -3,7 +3,7 @@ import itertools
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Sum
 from django.utils import timezone
 from geopy import distance
 from phonenumber_field.modelfields import PhoneNumberField
@@ -116,6 +116,9 @@ class OrderQuerySet(models.QuerySet):
             order.restaurants.sort(key=lambda r: r[1])
 
         return self
+
+    def total_price(self):
+        return self.annotate(total_price=Sum('order_items__price'))
 
 
 class Order(models.Model):

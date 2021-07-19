@@ -2,7 +2,6 @@ from django import forms
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import user_passes_test
-from django.db.models import Sum
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
@@ -97,6 +96,6 @@ def view_restaurants(request):
 @user_passes_test(is_manager, login_url='restaurateur:login')
 def view_orders(request):
     return render(request, template_name='order_items.html', context={
-        'order_items': Order.objects.annotate(total_price=Sum('order_items__price')).fetch_restaurants(),
+        'order_items': Order.objects.total_price().fetch_restaurants(),
         'opts': Order._meta
     })
