@@ -25,4 +25,4 @@ def get_coordinates_from_db_or_api(apikey, address):
             place.save()
         except requests.exceptions.HTTPError:
             return None
-    return (place.longitude, place.latitude)
+    return place.longitude, place.latitude

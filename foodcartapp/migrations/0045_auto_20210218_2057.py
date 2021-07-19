@@ -5,7 +5,7 @@ from django.db import migrations
 
 def calc_order_items_price(apps, schema_editor):
     OrderItem = apps.get_model('foodcartapp', 'OrderItem')
-    for item in OrderItem.objects.all():
+    for item in OrderItem.objects.all().iterator():
         item.price = item.quantity * item.product.price
         item.save()
 
