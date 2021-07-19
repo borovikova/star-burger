@@ -17,12 +17,12 @@ class Restaurant(models.Model):
     contact_phone = models.CharField(
         'контактный телефон', max_length=50, blank=True)
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'ресторан'
         verbose_name_plural = 'рестораны'
+
+    def __str__(self):
+        return self.name
 
 
 class ProductQuerySet(models.QuerySet):
@@ -54,12 +54,12 @@ class Product(models.Model):
 
     objects = ProductQuerySet.as_manager()
 
-    def __str__(self):
-        return self.name
-
     class Meta:
         verbose_name = 'товар'
         verbose_name_plural = 'товары'
+
+    def __str__(self):
+        return self.name
 
 
 class RestaurantMenuItem(models.Model):
@@ -70,15 +70,15 @@ class RestaurantMenuItem(models.Model):
     availability = models.BooleanField(
         'в продаже', default=True, db_index=True)
 
-    def __str__(self):
-        return f"{self.restaurant.name} - {self.product.name}"
-
     class Meta:
         verbose_name = 'пункт меню ресторана'
         verbose_name_plural = 'пункты меню ресторана'
         unique_together = [
             ['restaurant', 'product']
         ]
+
+    def __str__(self):
+        return f"{self.restaurant.name} - {self.product.name}"
 
 
 class Place(models.Model):
@@ -146,12 +146,12 @@ class Order(models.Model):
 
     objects = OrderQuerySet.as_manager()
 
-    def __str__(self):
-        return f'{self.firstname} {self.lastname}, {self.address}'
-
     class Meta:
         verbose_name = 'заказ'
         verbose_name_plural = 'заказы'
+
+    def __str__(self):
+        return f'{self.firstname} {self.lastname}, {self.address}'
 
 
 class OrderItem(models.Model):
@@ -163,12 +163,12 @@ class OrderItem(models.Model):
     price = models.DecimalField('стоимость позиции', null=True, max_digits=8, decimal_places=2,
                                 validators=[MinValueValidator(0)])
 
-    def __str__(self):
-        return f"{self.product.name}, {self.order}"
-
     class Meta:
         verbose_name = 'элемент заказа'
         verbose_name_plural = 'элементы заказа'
         unique_together = [
             ['order', 'product']
         ]
+
+    def __str__(self):
+        return f"{self.product.name}, {self.order}"
