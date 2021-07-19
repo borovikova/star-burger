@@ -94,13 +94,16 @@ class ProductAdmin(admin.ModelAdmin):
         if not obj.image:
             return 'выберите картинку'
         return format_html('<img src="{url}" height="200"/>', url=obj.image.url)
+
     get_image_preview.short_description = 'превью'
 
     def get_image_list_preview(self, obj):
         if not obj.image or not obj.id:
             return 'нет картинки'
         edit_url = reverse('admin:foodcartapp_product_change', args=(obj.id,))
-        return format_html('<a href="{edit_url}"><img src="{src}" height="50"/></a>', edit_url=edit_url, src=obj.image.url)
+        return format_html('<a href="{edit_url}"><img src="{src}" height="50"/></a>', edit_url=edit_url,
+                           src=obj.image.url)
+
     get_image_list_preview.short_description = 'превью'
 
 
@@ -120,10 +123,10 @@ order_name.short_description = 'Заказ'
 class OrderAdmin(admin.ModelAdmin):
     def response_post_save_change(self, request, obj):
         res = super().response_post_save_change(request, obj)
-        if url_has_allowed_host_and_scheme(request.GET.get('next', ''), None):
-            return redirect(request.GET['next'])
-        else:
-            return res
+        next_page = request.GET.get('next')
+        if next_page and url_has_allowed_host_and_scheme(next_page, None):
+            return redirect(next_page)
+        return res
 
     search_fields = [
         'firstname',
