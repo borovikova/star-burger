@@ -12,7 +12,7 @@ import utils
 
 
 class Restaurant(models.Model):
-    name = models.CharField('название', max_length=50)
+    name = models.CharField('название', max_length=50, db_index=True)
     address = models.CharField('адрес', max_length=100, blank=True)
     contact_phone = models.CharField(
         'контактный телефон', max_length=50, blank=True)
@@ -132,15 +132,15 @@ class Order(models.Model):
     firstname = models.CharField('имя', max_length=50)
     lastname = models.CharField('фамилия', max_length=50)
     address = models.CharField('адрес', max_length=250)
-    phonenumber = PhoneNumberField()
+    phonenumber = PhoneNumberField(db_index=True)
     order_status = models.CharField('статус заказа',
-                                    max_length=15, choices=ORDER_STATUS, default='new')
+                                    max_length=15, choices=ORDER_STATUS, default='new', db_index=True)
     comment = models.TextField('комментарий', max_length=500, blank=True)
-    created = models.DateTimeField('время создания', default=timezone.now)
-    called = models.DateTimeField('время звонка', null=True, blank=True)
-    delivered = models.DateTimeField('время доставки', null=True, blank=True)
+    created = models.DateTimeField('время создания', default=timezone.now, db_index=True)
+    called = models.DateTimeField('время звонка', null=True, blank=True, db_index=True)
+    delivered = models.DateTimeField('время доставки', null=True, blank=True, db_index=True)
     payment = models.CharField(
-        'способ оплаты', max_length=15, choices=PAYMENT_METHOD)
+        'способ оплаты', max_length=15, choices=PAYMENT_METHOD, db_index=True)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.SET_NULL, null=True, blank=True, related_name='orders',
                                    verbose_name="ресторан")
 
