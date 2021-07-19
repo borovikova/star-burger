@@ -5,9 +5,9 @@
 {% block title %}Необработанные заказы | Star Burger{% endblock %}
 
 {% block content %}
-  <center>
-    <h2>Необработанные заказы</h2>
-  </center>
+<center>
+  <h2>Необработанные заказы</h2>
+</center>
 
 <hr/>
 <br/>
@@ -41,11 +41,11 @@
         <details>
           <summary>Развернуть</summary>
           <ul>
-            {% for restaurant in item.restaurants %}
-            {% if restaurant.1 %}
-            <li>{{ restaurant.0 }} - {{ restaurant.1 }} км<br></li>
+            {% for restaurant, distance in item.restaurants.items %}
+            {% if distance %}
+            <li>{{ restaurant }} - {{ distance }} км<br></li>
             {% else %}
-            <li>{{ restaurant.0 }}<br></li>
+            <li>{{ restaurant }}<br></li>
             {% endif %}
             {% endfor %}
           </ul>

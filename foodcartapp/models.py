@@ -99,7 +99,7 @@ class OrderQuerySet(models.QuerySet):
             order_coords = geodata_functions.get_coordinates_from_db_or_api(settings.YANDEX_API_KEY, order.address)
             order.products = [
                 item.product.id for item in order.order_items.all()]
-            order.restaurants = []
+            order.restaurants = {}
 
             for restaurant, group in itertools.groupby(menu_items, lambda menu_item: menu_item.restaurant):
                 products_in_restaurant = [menu_item.product.id for menu_item in group]
@@ -111,9 +111,9 @@ class OrderQuerySet(models.QuerySet):
                     if order_coords and restaurant_coords:
                         dist = round(
                             distance.distance(order_coords, restaurant_coords).km, 2)
-                    order.restaurants.append((restaurant.address, dist))
+                    order.restaurants[restaurant.address] = dist
 
-            order.restaurants.sort(key=lambda r: r[1])
+            order.restaurants = {k: v for k, v in sorted(order.restaurants.items(), key=lambda item: item[1])}
 
         return self
 
