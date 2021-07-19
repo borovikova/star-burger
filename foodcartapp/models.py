@@ -8,7 +8,7 @@ from django.utils import timezone
 from geopy import distance
 from phonenumber_field.modelfields import PhoneNumberField
 
-import utils
+from foodcartapp import geodata_functions
 
 
 class Restaurant(models.Model):
@@ -96,7 +96,7 @@ class OrderQuerySet(models.QuerySet):
             'restaurant', 'product').order_by('restaurant_id')
 
         for order in self:
-            order_coords = utils.get_coordinates_from_db_or_api(settings.YANDEX_API_KEY, order.address)
+            order_coords = geodata_functions.get_coordinates_from_db_or_api(settings.YANDEX_API_KEY, order.address)
             order.products = [
                 item.product.id for item in order.order_items.all()]
             order.restaurants = []
@@ -105,7 +105,7 @@ class OrderQuerySet(models.QuerySet):
                 products_in_restaurant = [menu_item.product.id for menu_item in group]
 
                 if all(product in products_in_restaurant for product in order.products):
-                    restaurant_coords = utils.get_coordinates_from_db_or_api(
+                    restaurant_coords = geodata_functions.get_coordinates_from_db_or_api(
                         settings.YANDEX_API_KEY, restaurant.address)
                     dist = None
                     if order_coords and restaurant_coords:
