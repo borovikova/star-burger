@@ -20,8 +20,8 @@ def get_coordinates_from_db_or_api(apikey, address):
         place = models.Place.objects.get(address=address)
     except ObjectDoesNotExist:
         try:
-            coords = fetch_coordinates(apikey, address)
-            place = models.Place(address=address, longitude=coords[0], latitude=coords[1])
+            longitude, latitude = fetch_coordinates(apikey, address)
+            place = models.Place(address=address, longitude=longitude, latitude=latitude)
             place.save()
         except requests.exceptions.HTTPError:
             return None
