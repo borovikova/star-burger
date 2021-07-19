@@ -82,7 +82,7 @@ class RestaurantMenuItem(models.Model):
 
 
 class Place(models.Model):
-    address = models.CharField('адрес', max_length=150)
+    address = models.CharField('адрес', max_length=150, unique=True)
     latitude = models.FloatField('широта')
     longitude = models.FloatField('долгота')
     updated = models.DateTimeField('дата обновления', auto_now=True)
