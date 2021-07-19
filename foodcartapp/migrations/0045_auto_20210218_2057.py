@@ -5,13 +5,10 @@ from django.db import migrations
 
 def calc_order_items_price(apps, schema_editor):
     OrderItem = apps.get_model('foodcartapp', 'OrderItem')
-    for item in OrderItem.objects.all().iterator():
-        item.price = item.quantity * item.product.price
-        item.save()
+    OrderItem.objects.select_related('product').update(price=F('quantity') * F('product__price'))
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('foodcartapp', '0044_auto_20210218_1936'),
     ]
